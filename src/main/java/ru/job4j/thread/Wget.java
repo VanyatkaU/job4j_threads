@@ -24,14 +24,23 @@ public class Wget implements Runnable {
              FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             byte[] dataBuffer = new byte[SIZE_LOAD];
             int bytesRead;
+            int downloadData = 0;
+            long timeStart = System.currentTimeMillis();
+            long timeInterval;
             while ((bytesRead = in.read(dataBuffer, 0, SIZE_LOAD)) != -1) {
+                downloadData += bytesRead;
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
-                if (bytesRead >= speed) {
-                    Thread.sleep(TIME_WAIT);
+                if (downloadData >= speed) {
+                    timeInterval = System.currentTimeMillis() - timeStart;
+                    if (timeInterval < TIME_WAIT) {
+                        Thread.sleep(TIME_WAIT - timeInterval);
+                    }
+                    downloadData = 0;
+                    timeStart = System.currentTimeMillis();
                 }
             }
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -49,5 +58,6 @@ public class Wget implements Runnable {
         Thread wget = new Thread(new Wget(url, speed, file));
         wget.start();
         wget.join();
+
     }
 }
