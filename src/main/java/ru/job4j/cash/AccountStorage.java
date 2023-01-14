@@ -32,15 +32,17 @@ public class AccountStorage {
     public boolean transfer(int fromId, int toId, int amount) {
         Optional<Account> accountFrom = getById(fromId);
         Optional<Account> accountTo = getById(toId);
+        boolean result = false;
         if (accountFrom.isPresent() && accountTo.isPresent()) {
             Account sender = accountFrom.get();
             Account recipient = accountTo.get();
+            result = true;
             if (sender.amount() < amount) {
                 throw new IllegalArgumentException("Not enough funds");
             }
             update(new Account(sender.id(), sender.amount() - amount));
             update(new Account(recipient.id(), recipient.amount() + amount));
         }
-        return false;
+        return result;
     }
 }
