@@ -11,9 +11,13 @@ public class SimpleBlockingQueue<T> {
 
     @GuardedBy("this")
     private Queue<T> queue = new LinkedList<>();
-    private final int size;
+    private int size;
 
-    public SimpleBlockingQueue(int size) {
+    public SimpleBlockingQueue() {
+
+    }
+
+    public SimpleBlockingQueue(final int size) {
         this.size = size;
     }
 
